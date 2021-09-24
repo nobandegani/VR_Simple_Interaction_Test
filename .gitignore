@@ -1,6 +1,9 @@
 # Visual Studio 2015 user specific files
 .vs/
 
+# Rider user specific files
+.idea/
+
 # Compiled Object files
 *.slo
 *.lo
@@ -80,7 +83,4 @@ DerivedDataCache/*
 /packaged/*
 
 # igonre packs
-/content/SCK_Casual01/*
-/content/suppoter_motion/*
-/content/BigCompanyArchViz/*
-Content/Kalao/Maps/LVL_Main_BuiltData.uasset
+
