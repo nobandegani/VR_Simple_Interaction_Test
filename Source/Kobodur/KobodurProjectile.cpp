@@ -1,8 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "KobodurProjectile.h"
+
+#include "Enemy.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AKobodurProjectile::AKobodurProjectile() 
 {
@@ -34,10 +37,16 @@ AKobodurProjectile::AKobodurProjectile()
 void AKobodurProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics() )
 	{
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
-
+	}else if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && (OtherActor->GetClass()->GetName() == "BP_Enemy_C") )
+	{
+		AEnemy* AEnemyRef = Cast<AEnemy>(OtherActor);
+		if ( AEnemyRef )
+		{
+			AEnemyRef->TakeRandomDamage(5,10);
+		}
 		Destroy();
 	}
 }

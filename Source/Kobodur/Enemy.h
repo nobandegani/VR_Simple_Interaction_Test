@@ -4,17 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "AmmoPickup.generated.h"
+#include "Enemy.generated.h"
 
 UCLASS()
-class KOBODUR_API AAmmoPickup : public AActor
+class KOBODUR_API AEnemy : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AAmmoPickup();
-	
+	AEnemy();
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,13 +26,13 @@ public:
 	UPROPERTY()
 	USceneComponent* SceneComponent;
 	
-	/** AmmoPickup Mesh*/
-	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite, Category=Mesh)
-	UStaticMeshComponent* AmmoPickupMesh;
+	/** Enemy Mesh*/
+	UPROPERTY(VisibleDefaultsOnly,BlueprintReadWrite, Category=Mesh)
+	UStaticMeshComponent* EnemypMesh;
 
-	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = Step1, meta = ( DisplayName="Bullets" ))
-	int FNumberOfBullets;
+	UPROPERTY( BlueprintReadOnly, Category = Step4, meta = ( DisplayName="Health" ))
+	float FHealth;
 
 	UFUNCTION()
-	void AfterPickup();
+	void TakeRandomDamage(int min, int max);
 };

@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AmmoPickup.h"
+#include "Enemy.h"
 
 // Sets default values
-AAmmoPickup::AAmmoPickup()
-	: SceneComponent(nullptr),
-	AmmoPickupMesh(nullptr),
-	FNumberOfBullets(50)
+AEnemy::AEnemy()
+	:SceneComponent(nullptr),
+	EnemypMesh(nullptr),
+	FHealth(100.f)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -17,28 +17,34 @@ AAmmoPickup::AAmmoPickup()
 	RootComponent = SceneComponent;
 	
 	// Create a mesh component that will be used for viewing the ammo pickup
-	AmmoPickupMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AmmoPickup Mesh"));
-	AmmoPickupMesh->SetupAttachment(SceneComponent);
-	AmmoPickupMesh->SetCollisionObjectType(ECC_Pawn);
-	AmmoPickupMesh->SetCollisionProfileName("OverlapAll");
+	EnemypMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Enemy Mesh"));
+	EnemypMesh->SetupAttachment(SceneComponent);
 }
 
 // Called when the game starts or when spawned
-void AAmmoPickup::BeginPlay()
+void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AAmmoPickup::Tick(float DeltaTime)
+void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-void AAmmoPickup::AfterPickup()
+void AEnemy::TakeRandomDamage(int min, int max)
 {
-	this->Destroy();
+	int RndDamage = FMath::FRandRange( min, max);
+	if ( (FHealth - RndDamage) <= 0 )
+	{
+		FHealth = 0;
+		Destroy();
+	}else
+	{
+		FHealth -= RndDamage;
+	}
 }
 
