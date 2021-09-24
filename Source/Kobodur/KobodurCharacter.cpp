@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "KobodurCharacter.h"
+
+#include "AmmoPickup.h"
 #include "KobodurProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
@@ -18,6 +20,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 // AKobodurCharacter
 
 AKobodurCharacter::AKobodurCharacter()
+	:FNumberOfBullets(0), FMaximumNumberOfBullets(50)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -82,6 +85,9 @@ AKobodurCharacter::AKobodurCharacter()
 
 	// Uncomment the following line to turn motion controllers on by default:
 	//bUsingMotionControllers = true;
+	
+	// declare overlap events
+    	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AKobodurCharacter::OnOverlapBegin); 
 }
 
 void AKobodurCharacter::BeginPlay()
@@ -103,6 +109,8 @@ void AKobodurCharacter::BeginPlay()
 		VR_Gun->SetHiddenInGame(true, true);
 		Mesh1P->SetHiddenInGame(false, true);
 	}
+
+	FNumberOfBullets = FMaximumNumberOfBullets;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -140,7 +148,8 @@ void AKobodurCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 void AKobodurCharacter::OnFire()
 {
-	// try and fire a projectile
+	if ( FNumberOfBullets == 0 ) return;
+		// try and fire a projectile
 	if (ProjectileClass != nullptr)
 	{
 		UWorld* const World = GetWorld();
@@ -165,8 +174,11 @@ void AKobodurCharacter::OnFire()
 				// spawn the projectile at the muzzle
 				World->SpawnActor<AKobodurProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 			}
+			FNumberOfBullets--;
 		}
 	}
+	
+
 
 	// try and play the sound if specified
 	if (FireSound != nullptr)
@@ -298,3 +310,20 @@ bool AKobodurCharacter::EnableTouchscreenMovement(class UInputComponent* PlayerI
 	
 	return false;
 }
+
+void AKobodurCharacter::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor->GetClass()->GetName() == "BP_AmmoPickup_C" && (OtherActor != this) && OtherComp) 
+	{
+		AAmmoPickup* AAmmoPickupRef = Cast<AAmmoPickup>(OtherActor);
+		if ( (AAmmoPickupRef->FNumberOfBullets + FNumberOfBullets) > FMaximumNumberOfBullets)
+		{
+			FNumberOfBullets = FMaximumNumberOfBullets;
+		}else
+		{
+			FNumberOfBullets += AAmmoPickupRef->FNumberOfBullets;
+		}
+		AAmmoPickupRef->AfterPickup();
+		//GEngine->AddOnScreenDebugMessage(-1, 50, FColor::Red,TEXT("adasd"), true, FVector2D(1,1) );
+	}
+} 
