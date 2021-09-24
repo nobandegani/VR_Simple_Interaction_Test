@@ -25,7 +25,7 @@ void AKobodurPlayerController::BeginPlay()
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	//get class of character bp
-	UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("/Game/FirstPersonCPP/Blueprints/FirstPersonCharacter.FirstPersonCharacter")));
+	UObject* SpawnActor = Cast<UObject>(StaticLoadObject(UObject::StaticClass(), NULL, TEXT("/Game/FirstPersonCPP/Blueprints/BP_FirstPersonCharacter.BP_FirstPersonCharacter")));
 	UBlueprint* GeneratedBP = Cast<UBlueprint>(SpawnActor);
 	
 	CharacterRef1 = GetWorld()->SpawnActor<AKobodurCharacter>(GeneratedBP->GeneratedClass, foundEnemies[0]->GetActorLocation(), foundEnemies[0]->GetActorRotation(), SpawnInfo);
